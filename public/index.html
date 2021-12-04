@@ -20,9 +20,16 @@
                 await window.ethereum.send('eth_requestAccounts');
                 window.web3 = new Web3(window.ethereum);
 
+                /*if(!web3.isConnected()) {
+                    console.error("Not connected");
+                    document.getElementById("address").innerHTML = "Not connected";
+                }*/
+
                 //Getting account.
                 var accounts = web3.eth.getAccounts();
                 account = accounts[0];
+                console.log("account Address ==> "+ account);
+                document.getElementById("address").innerHTML = account;
             }
         })();
     </script>
@@ -40,6 +47,12 @@
             <img src="./img/icon.png" style="width:80px;height:80px;">
             <h2 style="text-decoration: underline;">CHESS CUBE</h2>
             <div class="right menu">
+                <div style="margin-top:20px; height: 40px; padding-right: 20px; margin-right: 15px;"
+                     class="ui labeled button" tabindex="0">
+                    <div class="ui button">
+                        <h2 style="text-decoration: underline;" id="address">Address</h2>
+                    </div>
+                </div>
                 <div style="margin-top:20px; height: 40px; padding-right: 20px; margin-right: 15px;"
                     class="ui labeled button" tabindex="0">
                     <div class="ui button">
