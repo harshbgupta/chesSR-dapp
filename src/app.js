@@ -3,6 +3,9 @@ const http = require('http')
 const express = require('express')
 const socketio = require('socket.io')
 
+//Blockchain
+const fs = require('fs');
+
 var Chess = require('chess.js').Chess;
 
 const app = express()
@@ -20,6 +23,7 @@ const userData = new Map()
 const roomsList = new Set()
 
 let totalUsers = 0;
+
 
 //Getting a connection
 io.on('connection', (socket) => {

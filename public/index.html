@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="./css/chessboard-1.0.0.min.css">
     <link rel="stylesheet" href="./css/styles.css">
     <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+    <script type = "text/javascript" src="utils.js"></script>
 </head>
 
 <body onload="connectMetaMask()">
@@ -185,6 +186,7 @@
                 account = accounts[0];
                 console.log("account Address ==> "+ account);
                 document.getElementById("address").innerHTML = account;
+                window.localStorage.setItem("address", account);
             } else{
                 alert("Meta mask is not Connected.");
             }
