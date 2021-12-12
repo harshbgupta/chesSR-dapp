@@ -1,10 +1,13 @@
-pragma solidity ^0.4.0;
+// SPDX-License-Identifier: GPL-3.0-or-later
+pragma solidity ^0.8.7;
+import "hardhat/console.sol";
 
 contract ChesSR {
+
     address public owner;
     mapping(string => Room) public contests;
     mapping(string => bool) public roomIdExistence;
-    string[] roomIds;
+    string[] public roomIds;
 
     constructor() payable{
         owner = msg.sender;
@@ -30,34 +33,35 @@ contract ChesSR {
         return rooms;
     }
 
-    modifier creatingRoom(string memory roomId,uint betAmount,address payable playerAddress){
-        require(msg.value >= 100 wei);
-
+    modifier creatingRoom(string memory roomId){
+        //require(msg.value >= 100 wei);
         Room storage room = contests[roomId];
         room.roomId = roomId;
-        if(room.betAmount == 0){
-            room.betAmount = betAmount;
-        } else{
-            if(betAmount!=room.betAmount){
-                revert("Bet Amount is not same");
-            }
-        }
 
         if(room.players.length < 2){
-            room.players.push(playerAddress);
+            room.players.push(payable(msg.sender));
+            if(room.players.length == 1){
+                room.betAmount = msg.value;
+            }else {
+                if(msg.value == room.betAmount){
+
+                } else{
+                    //revert("Bet amount is not same");
+                }
+            }
         } else{
             revert("Room is already filled");
         }
-
         contests[roomId] =room;
-        require(!roomIdExistence[roomId]);
-        roomIds.push(roomId);
-        roomIdExistence[roomId] = true;
+        if(!roomIdExistence[roomId]){
+            roomIds.push(roomId);
+            roomIdExistence[roomId] = true;
+        }
         _;
     }
 
 
-    function deposit(string memory roomId, uint betAmount,address payable playerAddress) external payable creatingRoom(roomId, betAmount,playerAddress) returns (bool){
+    function deposit(string memory roomId) external payable creatingRoom(roomId) returns (bool){
         return true;
     }
 
@@ -70,4 +74,5 @@ contract ChesSR {
     function checkBalance() public view returns (uint256){
         return (address(this).balance);
     }
+
 }

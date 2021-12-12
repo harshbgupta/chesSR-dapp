@@ -1,8 +1,8 @@
-##Online Multiplayer Chess Game: -
-Features: 
-1. You can play single player.
-2. You can change themes of board.
-3. You can chat with your opponent.
-4. Sounds added
+##Play chess and win tokens: -
 
-Link: https://kansal-online-chess.herokuapp.com/
+Features: 
+1. Play Mode: Single player and multiplayer mode.
+2. Customizable themes.
+3. Chat with your opponents while playing the game.
+
+

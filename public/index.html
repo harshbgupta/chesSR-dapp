@@ -7,11 +7,9 @@
     <link rel="stylesheet" type="text/css" href="./css/semantic.min.css">
     <link rel="stylesheet" href="./css/chessboard-1.0.0.min.css">
     <link rel="stylesheet" href="./css/styles.css">
-    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
-    <script type = "text/javascript" src="utils.js"></script>
 </head>
 
-<body onload="connectMetaMask()">
+<body>
     <audio id="myAudio">
         <source src="./mp3/soundMove.mp3" type="audio/mpeg">
         Your browser does not support the audio element.
@@ -24,22 +22,23 @@
     <div>
         <div style="margin: 0; border-bottom: 4px solid gray; padding: 3px 0; " class="ui secondary menu">
             <img src="./img/icon.png" style="width:80px;height:80px;">
-            <h2 style="text-decoration: underline;">CHESS CUBE</h2>
+            <h2 style="text-decoration: underline;">Chess Dapp</h2>
             <div class="right menu">
-                <div style="margin-top:20px; height: 40px; padding-right: 20px; margin-right: 15px;" onclick="connectMetaMask()"
-                     class="ui labeled button" tabindex="0">
+                <div style="margin-top:20px; height: 40px; padding-left: 20px;  margin-right: 15px;"
+                    class="ui labeled button" tabindex="0">
                     <div class="ui button">
-                        <i class="user icon"></i>
-                        <!--<h4 style="text-decoration: underline;" id="address">Address</h4>-->
+                        <i class="star icon"></i> Address
                     </div>
                     <a class="ui basic label">
-                        <span id="address" ><h5>Connect MetaMask</h5></span>
+                        <span id="address">
+                            <button class="game ui blue button" id="connectWallet">Connect Wallet</button>
+                        </span>
                     </a>
                 </div>
                 <div style="margin-top:20px; height: 40px; padding-right: 20px; margin-right: 15px;"
                     class="ui labeled button" tabindex="0">
                     <div class="ui button">
-                        <i class="user icon"></i> #Players
+                        <i class="user icon"></i> Players
                     </div>
                     <a class="ui basic label">
                         <span id="players">0</span>
@@ -49,7 +48,7 @@
                 <div style="margin-top:20px; height: 40px; padding-left: 20px;  margin-right: 15px;"
                     class="ui labeled button" tabindex="0">
                     <div class="ui button">
-                        <i class="star icon"></i> #Rooms
+                        <i class="star icon"></i> Rooms
                     </div>
                     <a class="ui basic label">
                         <span id="rooms">0</span>
@@ -59,14 +58,15 @@
         </div>
     </div>
 
+
     <div>
         <div id="gameMode">
-            <h1 style="text-align: center; margin: 10px; font-size: 35px;">Game Mode </h1>
-             <div style="text-align:center;">
-                <button class="game ui black button " id="singlePlayer">Single Player</button>
+            <h1 style="text-align: center; margin: 10px; font-size: 35px;"> Game Mode</h1>
+            <div style="text-align:center;">
+                <button class="game ui black button disabled" id="singlePlayer">Single Player</button>
             </div>
             <div style="text-align:center;">
-                <button class="game ui black button" id="multiPlayer">Multi Player</button>
+                <button class="game ui black button " id="multiPlayer">Multi Player</button>
             </div>
         </div>
 
@@ -78,9 +78,6 @@
                 </div>
                 <div style="text-align:center;">
                     <input class="formInput" type="text" placeholder="Room" style="padding: 10px;">
-                </div>
-                <div style="text-align:center;">
-                    <input class="formInput" type="number" placeholder="Amount (In gwei)" style="padding: 10px;">
                 </div>
                 <div id="roomDropdownP" style="text-align:center;  height: 50px; margin: 10px; padding: 0 4px; ">
                     <div id="roomDropdown" class="ui fluid search selection dropdown"
@@ -94,6 +91,14 @@
                         </div>
                     </div>
                 </div>
+                <div style="text-align:center;">
+                    <input class="formInput" type="text" placeholder="Amount" id="room_amount" style="padding: 10px;">
+                    <!--<button class="game ui black button" id="show_max_amount">Max</button>-->
+                </div>
+                <div style="text-align:center;">
+                    <div class="default text" id="room_error_msg"></div>
+                </div>
+
                 <div style="text-align:center;">
                     <button class="game ui black button " id="joinButton">Join</button>
                 </div>
@@ -161,8 +166,7 @@
     </div>
     <div
         style="background-color: black; color: white; margin-top:auto; padding: 15px; text-align: center; font-size: 15px;">
-        <i>"Avoid the crowd. Do your own thinking independently. Be the chess player, not the chess piece"</i>
-    </div>
+        <i>"Avoid the crowd. Do your own thinking independently. Be the chess player, not the chess piece"</i></div>
     <script src="https://code.jquery.com/jquery-3.1.1.min.js"
         integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
     <script src="./js/semantic.min.js"></script>
@@ -172,25 +176,353 @@
         integrity="sha384-s3XgLpvmHyscVpijnseAmye819Ee3yaGa8NxstkJVyA6nuDFjt59u1QvuEl/mecz"
         crossorigin="anonymous"></script>
     <script src="./js/app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+    <script src="../contracts/chess_abi.json"></script>
+    
+    <script>
+
+        function init() {
+
+            let contract_abi = [
+                {
+                    "inputs": [],
+                    "stateMutability": "payable",
+                    "type": "constructor"
+                },
+                {
+                    "inputs": [
+                        {
+                            "internalType": "address",
+                            "name": "newOwner",
+                            "type": "address"
+                        }
+                    ],
+                    "name": "changeOwner",
+                    "outputs": [],
+                    "stateMutability": "nonpayable",
+                    "type": "function"
+                },
+                {
+                    "inputs": [],
+                    "name": "checkBalance",
+                    "outputs": [
+                        {
+                            "internalType": "uint256",
+                            "name": "",
+                            "type": "uint256"
+                        }
+                    ],
+                    "stateMutability": "view",
+                    "type": "function"
+                },
+                {
+                    "inputs": [
+                        {
+                            "internalType": "string",
+                            "name": "",
+                            "type": "string"
+                        }
+                    ],
+                    "name": "contests",
+                    "outputs": [
+                        {
+                            "internalType": "string",
+                            "name": "roomId",
+                            "type": "string"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "betAmount",
+                            "type": "uint256"
+                        }
+                    ],
+                    "stateMutability": "view",
+                    "type": "function"
+                },
+                {
+                    "inputs": [
+                        {
+                            "internalType": "string",
+                            "name": "roomId",
+                            "type": "string"
+                        }
+                    ],
+                    "name": "deposit",
+                    "outputs": [
+                        {
+                            "internalType": "bool",
+                            "name": "",
+                            "type": "bool"
+                        }
+                    ],
+                    "stateMutability": "payable",
+                    "type": "function"
+                },
+                {
+                    "inputs": [],
+                    "name": "getRoomList",
+                    "outputs": [
+                        {
+                            "components": [
+                                {
+                                    "internalType": "string",
+                                    "name": "roomId",
+                                    "type": "string"
+                                },
+                                {
+                                    "internalType": "uint256",
+                                    "name": "betAmount",
+                                    "type": "uint256"
+                                },
+                                {
+                                    "internalType": "address payable[]",
+                                    "name": "players",
+                                    "type": "address[]"
+                                }
+                            ],
+                            "internalType": "struct ChesSR.Room[]",
+                            "name": "",
+                            "type": "tuple[]"
+                        }
+                    ],
+                    "stateMutability": "view",
+                    "type": "function"
+                },
+                {
+                    "inputs": [],
+                    "name": "owner",
+                    "outputs": [
+                        {
+                            "internalType": "address",
+                            "name": "",
+                            "type": "address"
+                        }
+                    ],
+                    "stateMutability": "view",
+                    "type": "function"
+                },
+                {
+                    "inputs": [
+                        {
+                            "internalType": "string",
+                            "name": "",
+                            "type": "string"
+                        }
+                    ],
+                    "name": "roomIdExistence",
+                    "outputs": [
+                        {
+                            "internalType": "bool",
+                            "name": "",
+                            "type": "bool"
+                        }
+                    ],
+                    "stateMutability": "view",
+                    "type": "function"
+                },
+                {
+                    "inputs": [
+                        {
+                            "internalType": "uint256",
+                            "name": "",
+                            "type": "uint256"
+                        }
+                    ],
+                    "name": "roomIds",
+                    "outputs": [
+                        {
+                            "internalType": "string",
+                            "name": "",
+                            "type": "string"
+                        }
+                    ],
+                    "stateMutability": "view",
+                    "type": "function"
+                },
+                {
+                    "inputs": [
+                        {
+                            "internalType": "address payable",
+                            "name": "receiver",
+                            "type": "address"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "amount",
+                            "type": "uint256"
+                        }
+                    ],
+                    "name": "transfer",
+                    "outputs": [
+                        {
+                            "internalType": "bool",
+                            "name": "",
+                            "type": "bool"
+                        }
+                    ],
+                    "stateMutability": "nonpayable",
+                    "type": "function"
+                }
+            ];
+
+            let account = null;
+//            const contract_abi = "../contracts/chess_abi.json";
+            const contract_address = "0xd9145CCE52D386f254917e481eB44e9943F39138";
+            //1. Connect to MetaMask
+            (async () => {
+                if (window.ethereum) {
+//                    window.web3 = new Web3("HTTP://127.0.0.1:7545");
+                    window.web3 = new Web3("https://rpc-mumbai.maticvigil.com/");                   
+                    await window.ethereum.enable();
+                    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts'});
+                    account = accounts[0];
+//                    console.log(accounts);
+//                    console.log("account Address ==> "+ account);
+                    const balance = await web3.eth.getBalance(account)
+//                    console.log(balance);
+                    document.getElementById("address").innerHTML = account;
+//                    document.getElementById("max_balance").innerHTML = balance/18;
+                    window.localStorage.setItem("address", account);
+                    window.localStorage.setItem("balance", balance);
+                    
+                    chessContract = new web3.eth.Contract(contract_abi, contract_address);
+                    console.log(chessContract);
+                    var y = await chessContract.methods.checkBalance().call();
+                    console.log("Balance "+ y);
+
+                    const tx = chessContract.methods.deposit('room1', 123, account);
+                    const nounce = await web3.eth.getTransactionCount(account);
+                    const gas = await tx.estimateGas({from: account});
+                    const gasPrice = await web3.eth.getGasPrice();
+/*                    const tx2 = {
+                      // this could be provider.addresses[0] if it exists
+                      from: account,
+                      // target address, this could be a smart contract address
+                      to: contract_address,
+                      // optional if you want to specify the gas limit 
+                      gas,
+                      gasPrice,
+                      // optional if you are invoking say a payable function 
+//                      value: 1000000000000000,
+                      // this encodes the ABI of the method and the arguements
+                      data: tx.encodeABI() ,
+//                      nonce: await web3.eth.getTransactionCount(account),
+                      chainId: 80001
+                    };
+
+                    console.log(tx);
+                    console.log(await web3.eth.sign("", account));
+                    const signPromise = await web3.eth.signTransaction(tx2, tx2.from);
+                    console.log(signPromise);
+*/
+
+                    var x = await chessContract.methods.deposit(
+                      'room1',
+                      1234,
+                      account
+                    ).send({
+                      from:account,
+                      value: '1000000000000000',
+                      gasPrice: gasPrice,
+                      gas:gas
+                    });
+                    console.log(x);
+
+                    
+                    var x = await chessContract.methods.deposit('myroom3',123,account)
+                    .send({
+                      from:"0x3E46a778B837da6e4EF7c14e9c0313390a9ED6D3",
+                      value: '1000000000000000',
+                      gasPrice: '1',
+                      gas:'100'
+                    });
+
+                    console.log(x);
+                } else{
+                    alert("Meta mask is not Connected.");
+                }
+            })();
+        }
+        init();
+
+        document.getElementById("connectWallet").addEventListener('click', (e) => {
+            e.preventDefault();
+            init();
+        })
+        document.getElementById("show_max_amount").addEventListener('click', (e) => {
+            e.preventDefault();
+            (async () => {
+                if (window.ethereum) {
+                    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts'});
+                    account = accounts[0];
+                    console.log("account Address ==> "+ account);                    
+                    document.getElementById("room_amount").value = balance/(10**18);
+                }
+            })();
+        })
+        document.getElementById("room_amount").addEventListener('change', (e) => {
+            e.preventDefault();
+            var amount = e.target.value;
+            
+            (async () => {
+//                validateAmount(amount);
+                    console.log("------------");
+                var balance = await getUserBalance();
+                console.log("=======");
+                if(amount > balance){
+                    // show error
+                    console.log("123");
+                    document.getElementById("room_error_msg").innerHTML = "Insufficient Balance";
+    //                document.getElementById("room_error_msg").attr('display', 'block');
+                }else{
+                    // hide error
+                    console.log("356");
+                    document.getElementById("room_error_msg").innerHTML = "";
+    //                document.getElementById("room_error_msg").attr('display', 'none');
+                }
+            })();
+        })
+
+        async function validateAmount(amount){
+            var balance = await getUserBalance();
+            console.log("ayush");
+            if(amount > balance){
+                    // show error
+                    console.log("123");
+                    document.getElementById("room_error_msg").innerHTML = "Insufficient Balance";
+    //                document.getElementById("room_error_msg").attr('display', 'block');
+                }else{
+                    // hide error
+                    console.log("356");
+                    document.getElementById("room_error_msg").innerHTML = "";
+    //                document.getElementById("room_error_msg").attr('display', 'none');
+                }
+        }
+
+        async function getUserBalance() {
+            (async () => {
+                if (window.ethereum) {
+                    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts'});
+                    account = accounts[0];
+                    console.log(accounts);
+                    console.log("account Address ==> "+ account);
+                    const balance = await web3.eth.getBalance(account)
+                    console.log(balance+"-------");
+
+                    new Promise(resolve => {            
+                        resolve(balance/10**18);
+                    });
+                }else{
+                    new Promise(resolve => {            
+                        resolve(0);
+                    });
+                }
+            })();
+        }
+
+
+
+    </script>
 </body>
 
-<script>
-    function connectMetaMask() {
-        let account = null;
-        //1. Connect to MetaMask
-        (async () => {
-            if (window.ethereum) {
-                window.web3 = new Web3("HTTP://127.0.0.1:7545");
-                await window.ethereum.enable();
-                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts'});
-                account = accounts[0];
-                console.log("account Address ==> "+ account);
-                document.getElementById("address").innerHTML = account;
-                window.localStorage.setItem("address", account);
-            } else{
-                alert("Meta mask is not Connected.");
-            }
-        })();
-    }
-</script>
 </html>
