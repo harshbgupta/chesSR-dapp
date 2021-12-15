@@ -60,6 +60,16 @@
 				"internalType": "string",
 				"name": "roomId",
 				"type": "string"
+			},
+			{
+				"internalType": "uint256",
+				"name": "betAmount",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address payable",
+				"name": "playerAddress",
+				"type": "address"
 			}
 		],
 		"name": "deposit",
@@ -68,6 +78,19 @@
 				"internalType": "bool",
 				"name": "",
 				"type": "bool"
+			}
+		],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "deposit2",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
 			}
 		],
 		"stateMutability": "payable",
@@ -130,25 +153,6 @@
 				"internalType": "bool",
 				"name": "",
 				"type": "bool"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"name": "roomIds",
-		"outputs": [
-			{
-				"internalType": "string",
-				"name": "",
-				"type": "string"
 			}
 		],
 		"stateMutability": "view",

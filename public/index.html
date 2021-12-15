@@ -2,527 +2,530 @@
 <html>
 
 <head>
-    <title>Chess Cube</title>
-    <link rel="icon" href="./img/icon.jpg">
-    <link rel="stylesheet" type="text/css" href="./css/semantic.min.css">
-    <link rel="stylesheet" href="./css/chessboard-1.0.0.min.css">
-    <link rel="stylesheet" href="./css/styles.css">
+  <title>Chess Cube</title>
+  <link rel="icon" href="./img/icon.jpg">
+  <link rel="stylesheet" type="text/css" href="./css/semantic.min.css">
+  <link rel="stylesheet" href="./css/chessboard-1.0.0.min.css">
+  <link rel="stylesheet" href="./css/styles.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+  <script src="https://npmcdn.com/moralis@0.0.6/dist/moralis.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.min.js"></script>
 </head>
 
 <body>
-    <audio id="myAudio">
-        <source src="./mp3/soundMove.mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
-    </audio>
-    <audio id="messageTone">
-        <source src="./mp3/insight.mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
-    </audio>
-    <!-- Navbar -->
-    <div>
-        <div style="margin: 0; border-bottom: 4px solid gray; padding: 3px 0; " class="ui secondary menu">
-            <img src="./img/icon.png" style="width:80px;height:80px;">
-            <h2 style="text-decoration: underline;">Chess Dapp</h2>
-            <div class="right menu">
-                <div style="margin-top:20px; height: 40px; padding-left: 20px;  margin-right: 15px;"
-                    class="ui labeled button" tabindex="0">
-                    <div class="ui button">
-                        <i class="star icon"></i> Address
-                    </div>
-                    <a class="ui basic label">
-                        <span id="address">
-                            <button class="game ui blue button" id="connectWallet">Connect Wallet</button>
-                        </span>
-                    </a>
-                </div>
-                <div style="margin-top:20px; height: 40px; padding-right: 20px; margin-right: 15px;"
-                    class="ui labeled button" tabindex="0">
-                    <div class="ui button">
-                        <i class="user icon"></i> Players
-                    </div>
-                    <a class="ui basic label">
-                        <span id="players">0</span>
-                    </a>
-                </div>
-
-                <div style="margin-top:20px; height: 40px; padding-left: 20px;  margin-right: 15px;"
-                    class="ui labeled button" tabindex="0">
-                    <div class="ui button">
-                        <i class="star icon"></i> Rooms
-                    </div>
-                    <a class="ui basic label">
-                        <span id="rooms">0</span>
-                    </a>
-                </div>
-            </div>
+  <audio id="myAudio">
+    <source src="./mp3/soundMove.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
+  <audio id="messageTone">
+    <source src="./mp3/insight.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
+  <!-- Navbar -->
+  <div>
+    <div style="margin: 0; border-bottom: 4px solid gray; padding: 3px 0; " class="ui secondary menu">
+      <img src="./img/icon.png" style="width:80px;height:80px;">
+      <h2 style="text-decoration: underline;">Chess Dapp</h2>
+      <div class="right menu">
+        <div style="margin-top:20px; height: 40px; padding-left: 20px;  margin-right: 15px;" class="ui labeled button"
+          tabindex="0">
+          <div class="ui button">
+            <i class="star icon"></i> Address
+          </div>
+          <a class="ui basic label">
+            <span id="address">
+              <button class="game ui blue button" id="connectWallet">Connect Wallet</button>
+            </span>
+          </a>
         </div>
+        <div style="margin-top:20px; height: 40px; padding-right: 20px; margin-right: 15px;" class="ui labeled button"
+          tabindex="0">
+          <div class="ui button">
+            <i class="user icon"></i> Players
+          </div>
+          <a class="ui basic label">
+            <span id="players">0</span>
+          </a>
+        </div>
+
+        <div style="margin-top:20px; height: 40px; padding-left: 20px;  margin-right: 15px;" class="ui labeled button"
+          tabindex="0">
+          <div class="ui button">
+            <i class="star icon"></i> Rooms
+          </div>
+          <a class="ui basic label">
+            <span id="rooms">0</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div>
+    <div id="gameMode" style="display:none">
+      <h1 style="text-align: center; margin: 10px; font-size: 35px;"> Game Mode</h1>
+      <div style="text-align:center;">
+        <button class="game ui black button disabled" id="singlePlayer">Single Player</button>
+      </div>
+      <div style="text-align:center;">
+        <button class="game ui black button " id="multiPlayer">Multi Player</button>
+      </div>
     </div>
 
-
-    <div>
-        <div id="gameMode">
-            <h1 style="text-align: center; margin: 10px; font-size: 35px;"> Game Mode</h1>
-            <div style="text-align:center;">
-                <button class="game ui black button disabled" id="singlePlayer">Single Player</button>
-            </div>
-            <div style="text-align:center;">
-                <button class="game ui black button " id="multiPlayer">Multi Player</button>
-            </div>
+    <div id="joinFormDiv">
+      <form id="joinForm">
+        <h1 style="text-align: center; margin: 10px; font-size: 35px;">Start Game</h1>
+        <div style="text-align:center;">
+          <input class="formInput" type="text" placeholder="Name" style="padding: 10px;">
         </div>
-
-        <div id="joinFormDiv" style="display: none;">
-            <form id="joinForm">
-                <h1 style="text-align: center; margin: 10px; font-size: 35px;">Start Game</h1>
-                <div style="text-align:center;">
-                    <input class="formInput" type="text" placeholder="Name" style="padding: 10px;">
-                </div>
-                <div style="text-align:center;">
-                    <input class="formInput" type="text" placeholder="Room" style="padding: 10px;">
-                </div>
-                <div id="roomDropdownP" style="text-align:center;  height: 50px; margin: 10px; padding: 0 4px; ">
-                    <div id="roomDropdown" class="ui fluid search selection dropdown"
-                        style="border: 1px solid gray; width: 300px; margin:auto;">
-                        <input type="hidden" name="country">
-                        <i class="dropdown icon"></i>
-                        <div class="default text">Select Room</div>
-                        <div class="menu" id="dropRooms">
-                            <!-- <div class="item" data-value="af"><i class="icon star"></i>Afghanistan</div>
+        <div style="text-align:center;">
+          <input class="formInput" type="text" placeholder="Room" style="padding: 10px;">
+        </div>
+        <div id="roomDropdownP" style="text-align:center;  height: 50px; margin: 10px; padding: 0 4px; ">
+          <div id="roomDropdown" class="ui fluid search selection dropdown"
+            style="border: 1px solid gray; width: 300px; margin:auto;">
+            <input type="hidden" name="country">
+            <i class="dropdown icon"></i>
+            <div class="default text">Select Room</div>
+            <div class="menu" id="dropRooms">
+              <!-- <div class="item" data-value="af"><i class="icon star"></i>Afghanistan</div>
                             <div class="item" data-value="ar"><i class="icon star"></i>Argentina</div> -->
-                        </div>
-                    </div>
-                </div>
-                <div style="text-align:center;">
-                    <input class="formInput" type="text" placeholder="Amount" id="room_amount" style="padding: 10px;">
-                    <!--<button class="game ui black button" id="show_max_amount">Max</button>-->
-                </div>
-                <div style="text-align:center;">
-                    <div class="default text" id="room_error_msg"></div>
-                </div>
-
-                <div style="text-align:center;">
-                    <button class="game ui black button " id="joinButton">Join</button>
-                </div>
-                <div style="text-align:center;">
-                    <p id="message"></p>
-                </div>
-            </form>
-        </div>
-
-        <!-- /Input Form -->
-        <div>
-            <!-- Chess Board -->
-            <div id="chessGame" style="display: none;">
-                <!-- Color Schemes -->
-                <div style="text-align: center; margin: 10px;">
-                    <button id="grey_board" class="ui button black color_b">Grey</button>
-                    <button id="orange_board" class="ui button grey color_b">Orange</button>
-                    <button id="green_board" class="ui button grey color_b">Green</button>
-                    <button id="blue_board" class="ui button grey color_b">Blue</button>
-                </div>
-                <!-- Status and PGN -->
-                <div id="statusPGN" style="text-align: center; display: none;">
-                    <div>
-                        <label>
-                            <h3><strong>Status</strong></h3>
-                        </label>
-                        <div id="status">Your Turn</div>
-                    </div>
-                    <div>
-                        <label>
-                            <h3><strong>History</strong></h3>
-                        </label>
-                        <div id="pgn" style="overflow: auto; white-space: nowrap; width: 500px; margin: auto;"></div>
-                    </div>
-                </div>
-                <div id="myBoard" style="width: 569px; margin: auto; margin-top: 10px; margin-bottom: 10px;"></div>
-                <div style="text-align: center; margin-bottom: 20px;">
-                    <a href="/" class="ui button black" style="width: 569px;">Leave Game</a>
-                </div>
-
             </div>
+          </div>
         </div>
+        <!--
+
+
+        <div style="text-align:center;">
+          <input class="formInput" type="text" placeholder="Amount" id="room_amount" style="padding: 10px;">
+          <button class="game ui black button" id="show_max_amount">Max</button>
+        </div>
+        <div style="text-align:center;">
+          <div class="default text" id="room_error_msg"></div>
+        </div>
+-->
+
+        <div style="text-align:center;">
+          <button class="game ui black button " id="joinButton">Join</button>
+        </div>
+        <div style="text-align:center;">
+          <p id="message"></p>
+        </div>
+
+      </form>
     </div>
 
-    <!-- Chatting window -->
-    <div id="chat"
-        style=" background-color: white; display: none; text-align: right; position: fixed; bottom: 0; right: 0; width: 400px; margin-right: 10px; border: 2px solid black;">
-        <div class="ui button grey" style="border-radius: 0; width: 100%; padding: 15px; font-size: 16px;"
-            id="messageBox">
-            Messages
+    <!-- /Input Form -->
+    <div>
+      <!-- Chess Board -->
+      <div id="chessGame" style="display: none;">
+        <!-- Color Schemes -->
+        <div style="text-align: center; margin: 10px;">
+          <button id="grey_board" class="ui button black color_b">Grey</button>
+          <button id="orange_board" class="ui button grey color_b">Orange</button>
+          <button id="green_board" class="ui button grey color_b">Green</button>
+          <button id="blue_board" class="ui button grey color_b">Blue</button>
         </div>
-        <div id="chatBox" style="display: none; padding: 12px;">
-            <div id="chatContent" style="height: 240px; overflow-y: auto; word-break: break-all; ">
-                <!-- <div class="myMessage">Hello</div>
+        <!-- Status and PGN -->
+        <div id="statusPGN" style="text-align: center; display: none;">
+          <div>
+            <label>
+              <h3><strong>Status</strong></h3>
+            </label>
+            <div id="status">Your Turn</div>
+          </div>
+          <div>
+            <label>
+              <h3><strong>History</strong></h3>
+            </label>
+            <div id="pgn" style="overflow: auto; white-space: nowrap; width: 500px; margin: auto;"></div>
+          </div>
+        </div>
+        <div id="myBoard" style="width: 569px; margin: auto; margin-top: 10px; margin-bottom: 10px;"></div>
+        <div style="text-align: center; margin-bottom: 20px;">
+          <a href="/" class="ui button black" style="width: 569px;">Leave Game</a>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Chatting window -->
+  <div id="chat"
+    style=" background-color: white; display: none; text-align: right; position: fixed; bottom: 0; right: 0; width: 400px; margin-right: 10px; border: 2px solid black;">
+    <div class="ui button grey" style="border-radius: 0; width: 100%; padding: 15px; font-size: 16px;" id="messageBox">
+      Messages
+    </div>
+    <div id="chatBox" style="display: none; padding: 12px;">
+      <div id="chatContent" style="height: 240px; overflow-y: auto; word-break: break-all; ">
+        <!-- <div class="myMessage">Hello</div>
                 <div class="youMessage">his</div> -->
-            </div>
-            <form style="margin-bottom: 0;" class="ui form">
-                <div style="display: flex; justify-content: space-around;">
-                    <input class="form-control " id="inputMessage" type="text" placeholder="Send a Message"
-                        style="margin-right: 10px;">
-                    <button class="ui black button" id="send">Send</button>
-                </div>
-            </form>
+      </div>
+      <form style="margin-bottom: 0;" class="ui form">
+        <div style="display: flex; justify-content: space-around;">
+          <input class="form-control " id="inputMessage" type="text" placeholder="Send a Message"
+            style="margin-right: 10px;">
+          <button class="ui black button" id="send">Send</button>
         </div>
+      </form>
     </div>
-    <div
-        style="background-color: black; color: white; margin-top:auto; padding: 15px; text-align: center; font-size: 15px;">
-        <i>"Avoid the crowd. Do your own thinking independently. Be the chess player, not the chess piece"</i></div>
-    <script src="https://code.jquery.com/jquery-3.1.1.min.js"
-        integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
-    <script src="./js/semantic.min.js"></script>
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="./js/chessboard-1.0.0.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.2/chess.js"
-        integrity="sha384-s3XgLpvmHyscVpijnseAmye819Ee3yaGa8NxstkJVyA6nuDFjt59u1QvuEl/mecz"
-        crossorigin="anonymous"></script>
-    <script src="./js/app.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
-    <script src="../contracts/chess_abi.json"></script>
-    
-    <script>
+  </div>
+  <div
+    style="background-color: black; color: white; margin-top:auto; padding: 15px; text-align: center; font-size: 15px;">
+    <i>"Avoid the crowd. Do your own thinking independently. Be the chess player, not the chess piece"</i>
+  </div>
+  <script src="https://code.jquery.com/jquery-3.1.1.min.js"
+    integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+  <script src="./js/semantic.min.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="./js/chessboard-1.0.0.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.2/chess.js"
+    integrity="sha384-s3XgLpvmHyscVpijnseAmye819Ee3yaGa8NxstkJVyA6nuDFjt59u1QvuEl/mecz"
+    crossorigin="anonymous"></script>
+  <script src="./js/app.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
 
-        function init() {
+  <script>
 
-            let contract_abi = [
+    Moralis.initialize("2o4d57nla02SrlSRS5ZKJofnaxsbGX209Or4V3Bg"); // Application id from moralis.io
+    Moralis.serverURL = "https://rzirfc8grrz8.usemoralis.com:2053/server"; //Server url from moralis.io
+
+    console.log(window.web3);
+    console.log(Moralis.User.current())
+
+
+    function init() {
+      let contractAbi = [
+        {
+          "inputs": [],
+          "stateMutability": "payable",
+          "type": "constructor"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "newOwner",
+              "type": "address"
+            }
+          ],
+          "name": "changeOwner",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "checkBalance",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "string",
+              "name": "",
+              "type": "string"
+            }
+          ],
+          "name": "contests",
+          "outputs": [
+            {
+              "internalType": "string",
+              "name": "roomId",
+              "type": "string"
+            },
+            {
+              "internalType": "uint256",
+              "name": "betAmount",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "string",
+              "name": "roomId",
+              "type": "string"
+            }
+          ],
+          "name": "deposit",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ],
+          "stateMutability": "payable",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "getRoomList",
+          "outputs": [
+            {
+              "components": [
                 {
-                    "inputs": [],
-                    "stateMutability": "payable",
-                    "type": "constructor"
+                  "internalType": "string",
+                  "name": "roomId",
+                  "type": "string"
                 },
                 {
-                    "inputs": [
-                        {
-                            "internalType": "address",
-                            "name": "newOwner",
-                            "type": "address"
-                        }
-                    ],
-                    "name": "changeOwner",
-                    "outputs": [],
-                    "stateMutability": "nonpayable",
-                    "type": "function"
+                  "internalType": "uint256",
+                  "name": "betAmount",
+                  "type": "uint256"
                 },
                 {
-                    "inputs": [],
-                    "name": "checkBalance",
-                    "outputs": [
-                        {
-                            "internalType": "uint256",
-                            "name": "",
-                            "type": "uint256"
-                        }
-                    ],
-                    "stateMutability": "view",
-                    "type": "function"
-                },
-                {
-                    "inputs": [
-                        {
-                            "internalType": "string",
-                            "name": "",
-                            "type": "string"
-                        }
-                    ],
-                    "name": "contests",
-                    "outputs": [
-                        {
-                            "internalType": "string",
-                            "name": "roomId",
-                            "type": "string"
-                        },
-                        {
-                            "internalType": "uint256",
-                            "name": "betAmount",
-                            "type": "uint256"
-                        }
-                    ],
-                    "stateMutability": "view",
-                    "type": "function"
-                },
-                {
-                    "inputs": [
-                        {
-                            "internalType": "string",
-                            "name": "roomId",
-                            "type": "string"
-                        }
-                    ],
-                    "name": "deposit",
-                    "outputs": [
-                        {
-                            "internalType": "bool",
-                            "name": "",
-                            "type": "bool"
-                        }
-                    ],
-                    "stateMutability": "payable",
-                    "type": "function"
-                },
-                {
-                    "inputs": [],
-                    "name": "getRoomList",
-                    "outputs": [
-                        {
-                            "components": [
-                                {
-                                    "internalType": "string",
-                                    "name": "roomId",
-                                    "type": "string"
-                                },
-                                {
-                                    "internalType": "uint256",
-                                    "name": "betAmount",
-                                    "type": "uint256"
-                                },
-                                {
-                                    "internalType": "address payable[]",
-                                    "name": "players",
-                                    "type": "address[]"
-                                }
-                            ],
-                            "internalType": "struct ChesSR.Room[]",
-                            "name": "",
-                            "type": "tuple[]"
-                        }
-                    ],
-                    "stateMutability": "view",
-                    "type": "function"
-                },
-                {
-                    "inputs": [],
-                    "name": "owner",
-                    "outputs": [
-                        {
-                            "internalType": "address",
-                            "name": "",
-                            "type": "address"
-                        }
-                    ],
-                    "stateMutability": "view",
-                    "type": "function"
-                },
-                {
-                    "inputs": [
-                        {
-                            "internalType": "string",
-                            "name": "",
-                            "type": "string"
-                        }
-                    ],
-                    "name": "roomIdExistence",
-                    "outputs": [
-                        {
-                            "internalType": "bool",
-                            "name": "",
-                            "type": "bool"
-                        }
-                    ],
-                    "stateMutability": "view",
-                    "type": "function"
-                },
-                {
-                    "inputs": [
-                        {
-                            "internalType": "uint256",
-                            "name": "",
-                            "type": "uint256"
-                        }
-                    ],
-                    "name": "roomIds",
-                    "outputs": [
-                        {
-                            "internalType": "string",
-                            "name": "",
-                            "type": "string"
-                        }
-                    ],
-                    "stateMutability": "view",
-                    "type": "function"
-                },
-                {
-                    "inputs": [
-                        {
-                            "internalType": "address payable",
-                            "name": "receiver",
-                            "type": "address"
-                        },
-                        {
-                            "internalType": "uint256",
-                            "name": "amount",
-                            "type": "uint256"
-                        }
-                    ],
-                    "name": "transfer",
-                    "outputs": [
-                        {
-                            "internalType": "bool",
-                            "name": "",
-                            "type": "bool"
-                        }
-                    ],
-                    "stateMutability": "nonpayable",
-                    "type": "function"
+                  "internalType": "address payable[]",
+                  "name": "players",
+                  "type": "address[]"
                 }
-            ];
-
-            let account = null;
-//            const contract_abi = "../contracts/chess_abi.json";
-            const contract_address = "0xd9145CCE52D386f254917e481eB44e9943F39138";
-            //1. Connect to MetaMask
-            (async () => {
-                if (window.ethereum) {
-//                    window.web3 = new Web3("HTTP://127.0.0.1:7545");
-                    window.web3 = new Web3("https://rpc-mumbai.maticvigil.com/");                   
-                    await window.ethereum.enable();
-                    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts'});
-                    account = accounts[0];
-//                    console.log(accounts);
-//                    console.log("account Address ==> "+ account);
-                    const balance = await web3.eth.getBalance(account)
-//                    console.log(balance);
-                    document.getElementById("address").innerHTML = account;
-//                    document.getElementById("max_balance").innerHTML = balance/18;
-                    window.localStorage.setItem("address", account);
-                    window.localStorage.setItem("balance", balance);
-                    
-                    chessContract = new web3.eth.Contract(contract_abi, contract_address);
-                    console.log(chessContract);
-                    var y = await chessContract.methods.checkBalance().call();
-                    console.log("Balance "+ y);
-
-                    const tx = chessContract.methods.deposit('room1', 123, account);
-                    const nounce = await web3.eth.getTransactionCount(account);
-                    const gas = await tx.estimateGas({from: account});
-                    const gasPrice = await web3.eth.getGasPrice();
-/*                    const tx2 = {
-                      // this could be provider.addresses[0] if it exists
-                      from: account,
-                      // target address, this could be a smart contract address
-                      to: contract_address,
-                      // optional if you want to specify the gas limit 
-                      gas,
-                      gasPrice,
-                      // optional if you are invoking say a payable function 
-//                      value: 1000000000000000,
-                      // this encodes the ABI of the method and the arguements
-                      data: tx.encodeABI() ,
-//                      nonce: await web3.eth.getTransactionCount(account),
-                      chainId: 80001
-                    };
-
-                    console.log(tx);
-                    console.log(await web3.eth.sign("", account));
-                    const signPromise = await web3.eth.signTransaction(tx2, tx2.from);
-                    console.log(signPromise);
-*/
-
-                    var x = await chessContract.methods.deposit(
-                      'room1',
-                      1234,
-                      account
-                    ).send({
-                      from:account,
-                      value: '1000000000000000',
-                      gasPrice: gasPrice,
-                      gas:gas
-                    });
-                    console.log(x);
-
-                    
-                    var x = await chessContract.methods.deposit('myroom3',123,account)
-                    .send({
-                      from:"0x3E46a778B837da6e4EF7c14e9c0313390a9ED6D3",
-                      value: '1000000000000000',
-                      gasPrice: '1',
-                      gas:'100'
-                    });
-
-                    console.log(x);
-                } else{
-                    alert("Meta mask is not Connected.");
-                }
-            })();
+              ],
+              "internalType": "struct ChesSR.Room[]",
+              "name": "",
+              "type": "tuple[]"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "owner",
+          "outputs": [
+            {
+              "internalType": "address",
+              "name": "",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "string",
+              "name": "",
+              "type": "string"
+            }
+          ],
+          "name": "roomIdExistence",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ],
+          "name": "roomIds",
+          "outputs": [
+            {
+              "internalType": "string",
+              "name": "",
+              "type": "string"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address payable",
+              "name": "receiver",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256"
+            }
+          ],
+          "name": "transfer",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function"
         }
-        init();
+      ];
+      const contractAddress = "0xeEe867324d8f08d65881326b60103c21E65A6BfB";
+      let accountAddress;
+      let balance = 0;
 
-        document.getElementById("connectWallet").addEventListener('click', (e) => {
-            e.preventDefault();
-            init();
-        })
+      //1. Connect to MetaMask
+
+      //            await contract.methods.deposit("123123")
+      //            .send({ value: "1000000000", from: ethereum.selectedAddress });
+
+      (async () => {
+        let user = Moralis.User.current();
+        console.log(user);
+        if (!user) {
+          console.log("33333");
+          user = await Moralis.authenticate();
+          accountAddress = null;
+        } else {
+          console.log("123123");
+          console.log(user.get('ethAddress'));
+          accountAddress = user.get('ethAddress');
+          document.getElementById("address").innerHTML = accountAddress;
+          window.web3 = await Moralis.Web3.enable();
+          let contract = new web3.eth.Contract(contractAbi, contractAddress);
+          balance = await contract.methods.checkBalance().call();
+
+          console.log("Contract address --> " + contract);
+          console.log("Contract balance --> " + balance);
+
+
+          /*                  
+        const options = {
+          contractAddress: contractAddress,
+          functionName: "deposit",
+          abi: contractAbi,
+//                  msgValue: Moralis.Units.ETH("0.0001"),
+          params: {
+            roomId: "room123",
+//                    amount: Moralis.Units.Token("0.5", "18")
+          },
+        };
+
+        const receipt = await Moralis.executeFunction(options);
+        console.log(receipt)
+      */
+        }
+      })();
+    }
+    //        init();
+
+    document.getElementById("connectWallet").addEventListener('click', (e) => {
+      e.preventDefault();
+      console.log("3333355555");
+      (async () => {
+        if (window.ethereum) {
+          await init();
+        }
+
+      })();
+    })
+
+    document.getElementById("joinButton").addEventListener('click', (e) => {
+
+      /*
+      
+            const tx =  Moralis.executeFunction(options);
+      
+            tx.on("transactionHash", (hash) => { console.log(hash) })
+              .on("receipt", (receipt) => { console.log(receipt) })
+              .on("confirmation", (confirmationNumber, receipt) => { console.log(confirmationNumber, receipt) })
+              .on("error", (error) => { console.log(error) });
+      */
+    })
+    /*    
         document.getElementById("show_max_amount").addEventListener('click', (e) => {
-            e.preventDefault();
-            (async () => {
-                if (window.ethereum) {
-                    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts'});
-                    account = accounts[0];
-                    console.log("account Address ==> "+ account);                    
-                    document.getElementById("room_amount").value = balance/(10**18);
-                }
-            })();
+          e.preventDefault();
+          (async () => {
+            if (window.ethereum) {
+              const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+              account = accounts[0];
+              console.log("account Address ==> " + account);
+              //          document.getElementById("room_amount").value = balance / (10 ** 18);
+            }
+          })();
         })
-        document.getElementById("room_amount").addEventListener('change', (e) => {
-            e.preventDefault();
-            var amount = e.target.value;
-            
-            (async () => {
-//                validateAmount(amount);
-                    console.log("------------");
-                var balance = await getUserBalance();
-                console.log("=======");
-                if(amount > balance){
-                    // show error
-                    console.log("123");
-                    document.getElementById("room_error_msg").innerHTML = "Insufficient Balance";
-    //                document.getElementById("room_error_msg").attr('display', 'block');
-                }else{
-                    // hide error
-                    console.log("356");
-                    document.getElementById("room_error_msg").innerHTML = "";
-    //                document.getElementById("room_error_msg").attr('display', 'none');
-                }
-            })();
-        })
+    document.getElementById("room_amount").addEventListener('change', (e) => {
+      e.preventDefault();
+      var amount = e.target.value;
 
-        async function validateAmount(amount){
-            var balance = await getUserBalance();
-            console.log("ayush");
-            if(amount > balance){
-                    // show error
-                    console.log("123");
-                    document.getElementById("room_error_msg").innerHTML = "Insufficient Balance";
-    //                document.getElementById("room_error_msg").attr('display', 'block');
-                }else{
-                    // hide error
-                    console.log("356");
-                    document.getElementById("room_error_msg").innerHTML = "";
-    //                document.getElementById("room_error_msg").attr('display', 'none');
-                }
+      (async () => {
+        //                validateAmount(amount);
+        console.log("------------");
+        var balance = await getUserBalance();
+        console.log("=======");
+        if (amount > balance) {
+          // show error
+          console.log("123");
+          document.getElementById("room_error_msg").innerHTML = "Insufficient Balance";
+          //                document.getElementById("room_error_msg").attr('display', 'block');
+        } else {
+          // hide error
+          console.log("356");
+          document.getElementById("room_error_msg").innerHTML = "";
+          //                document.getElementById("room_error_msg").attr('display', 'none');
         }
+      })();
+    })
+    */
 
-        async function getUserBalance() {
-            (async () => {
-                if (window.ethereum) {
-                    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts'});
-                    account = accounts[0];
-                    console.log(accounts);
-                    console.log("account Address ==> "+ account);
-                    const balance = await web3.eth.getBalance(account)
-                    console.log(balance+"-------");
+    async function validateAmount(amount) {
+      var balance = await getUserBalance();
+      console.log("ayush");
+      if (amount > balance) {
+        // show error
+        console.log("123");
+        document.getElementById("room_error_msg").innerHTML = "Insufficient Balance";
+        //                document.getElementById("room_error_msg").attr('display', 'block');
+      } else {
+        // hide error
+        console.log("356");
+        document.getElementById("room_error_msg").innerHTML = "";
+        //                document.getElementById("room_error_msg").attr('display', 'none');
+      }
+    }
 
-                    new Promise(resolve => {            
-                        resolve(balance/10**18);
-                    });
-                }else{
-                    new Promise(resolve => {            
-                        resolve(0);
-                    });
-                }
-            })();
+    async function getUserBalance() {
+      (async () => {
+        if (window.ethereum) {
+          const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+          account = accounts[0];
+          console.log(accounts);
+          console.log("account Address ==> " + account);
+          const balance = await web3.eth.getBalance(account)
+          console.log("Account balance --> " + balance);
+
+          new Promise(resolve => {
+            resolve(balance / 10 ** 18);
+          });
+        } else {
+          new Promise(resolve => {
+            resolve(0);
+          });
         }
+      })();
+    }
 
 
 
-    </script>
+  </script>
 </body>
 
 </html>

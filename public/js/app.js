@@ -268,16 +268,228 @@ joinButtonEl.addEventListener('click', (e) => {
         formEl[0].setAttribute("disabled", "disabled")
         document.querySelector('#roomDropdownP').style.display = 'none';
         formEl[1].setAttribute("disabled", "disabled")
-        //Now Let's try to join it in room // If users more than 2 we will 
-        socket.emit('joinRoom', { user, room }, (error) => {
-            messageEl.textContent = error
-            if (alert(error)) {
-                window.location.reload()
+
+        let contractAbi = [
+            {
+                "inputs": [],
+                "stateMutability": "payable",
+                "type": "constructor"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "newOwner",
+                        "type": "address"
+                    }
+                ],
+                "name": "changeOwner",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "checkBalance",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "string",
+                        "name": "",
+                        "type": "string"
+                    }
+                ],
+                "name": "contests",
+                "outputs": [
+                    {
+                        "internalType": "string",
+                        "name": "roomId",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "betAmount",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "string",
+                        "name": "roomId",
+                        "type": "string"
+                    }
+                ],
+                "name": "deposit",
+                "outputs": [
+                    {
+                        "internalType": "bool",
+                        "name": "",
+                        "type": "bool"
+                    }
+                ],
+                "stateMutability": "payable",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "getRoomList",
+                "outputs": [
+                    {
+                        "components": [
+                            {
+                                "internalType": "string",
+                                "name": "roomId",
+                                "type": "string"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "betAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "address payable[]",
+                                "name": "players",
+                                "type": "address[]"
+                            }
+                        ],
+                        "internalType": "struct ChesSR.Room[]",
+                        "name": "",
+                        "type": "tuple[]"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "owner",
+                "outputs": [
+                    {
+                        "internalType": "address",
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "string",
+                        "name": "",
+                        "type": "string"
+                    }
+                ],
+                "name": "roomIdExistence",
+                "outputs": [
+                    {
+                        "internalType": "bool",
+                        "name": "",
+                        "type": "bool"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "roomIds",
+                "outputs": [
+                    {
+                        "internalType": "string",
+                        "name": "",
+                        "type": "string"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address payable",
+                        "name": "receiver",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "transfer",
+                "outputs": [
+                    {
+                        "internalType": "bool",
+                        "name": "",
+                        "type": "bool"
+                    }
+                ],
+                "stateMutability": "nonpayable",
+                "type": "function"
             }
-            else    //to reload even if negative confirmation
-                window.location.reload();
-        })
-        messageEl.textContent = "Waiting for other player to join"
+        ];
+        const contractAddress = "0xeEe867324d8f08d65881326b60103c21E65A6BfB";
+
+
+        (async () => {
+            window.web3 = await Moralis.Web3.enable();
+            let contract = new window.web3.eth.Contract(contractAbi, contractAddress);
+            console.log("123");
+            const options = {
+                contractAddress: contractAddress,
+                functionName: "deposit",
+                abi: contractAbi,
+                //                  msgValue: Moralis.Units.ETH("0.0001"),
+                params: {
+                    roomId: "room1234",
+                },
+            };
+            contract.methods.deposit('myroom4')
+                .send({
+                    from: "0x855df0Aa757B8da7c41508ED5Af52CA38bE932Fb",
+                    value: '100000000000000000',
+                    gasPrice: '100',
+                    gas: '10000000'
+                });
+            console.log("2222222");
+            //Now Let's try to join it in room // If users more than 2 we will 
+            socket.emit('joinRoom', { user, room }, (error) => {
+                messageEl.textContent = error
+                if (alert(error)) {
+                    window.location.reload()
+                }
+                else    //to reload even if negative confirmation
+                    window.location.reload();
+            })
+            messageEl.textContent = "Waiting for other player to join"
+        })();
+
+
+
+
+
     }
 })
 
